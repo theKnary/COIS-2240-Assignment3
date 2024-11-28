@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -89,6 +90,8 @@ public class Transaction {
 	public void saveTransaction(String tDetails) {
 		try {
 			// write transaction details to file as line
+			if (!Files.exists(transactionsFilePath, LinkOption.NOFOLLOW_LINKS))
+				Files.createFile(transactionsFilePath);
 			Files.write(transactionsFilePath, Arrays.asList(tDetails), StandardCharsets.UTF_8,
 					StandardOpenOption.APPEND);
 		} catch (IOException e) {
