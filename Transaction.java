@@ -88,7 +88,6 @@ public class Transaction {
 	// save transaction details to file system
 	public void saveTransaction(String tDetails) {
 		try {
-
 			// write transaction details to file as line
 			Files.write(transactionsFilePath, Arrays.asList(tDetails), StandardCharsets.UTF_8,
 					StandardOpenOption.APPEND);
