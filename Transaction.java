@@ -5,7 +5,7 @@ public class Transaction {
 	private static Transaction instance;
 
 	// Singleton of transaction instance
-	public Transaction getTransaction() {
+	public static Transaction getTransaction() {
 		if (instance == null)
 			instance = new Transaction();
 
