@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,9 +8,11 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class Transaction {
 	private static Transaction instance;
+	private static final Path transactionsFilePath = Paths.get("transactions.txt");
 
 	// Singleton of transaction instance
 	public static Transaction getTransaction() {
@@ -60,8 +63,25 @@ public class Transaction {
 		return sdf.format(new Date());
 	}
 
+	// Display transaction history by reading from file
 	public void displayTransactionHistory() {
-		// TODO Auto-generated method stub
+		File f = new File(transactionsFilePath.toString());
+
+		System.out.println("----TRANSACTION HISTORY----");
+		// if the file doesn't exist, history must be empty
+		if (!f.exists())
+			System.out.println("Transaction history empty.");
+		try {
+			List<String> transactionHistory = Files.readAllLines(transactionsFilePath);
+			// print one transaction for each line
+			for (String t : transactionHistory) {
+				System.out.println(t.toString());
+			}
+
+		} catch (IOException e) {
+			System.out.println("Error reading transaction file");
+			e.printStackTrace();
+		}
 
 	}
 
@@ -69,8 +89,9 @@ public class Transaction {
 	public void saveTransaction(String tDetails) {
 		try {
 
-			Path filePath = Paths.get("transactions.txt");
-			Files.write(filePath, Arrays.asList(tDetails), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+			// write transaction details to file as line
+			Files.write(transactionsFilePath, Arrays.asList(tDetails), StandardCharsets.UTF_8,
+					StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			System.out.println("Error writing transaction file");
 			e.printStackTrace();
