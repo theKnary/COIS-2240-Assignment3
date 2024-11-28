@@ -49,4 +49,9 @@ public class Transaction {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(new Date());
 	}
+
+	public void displayTransactionHistory() {
+		// TODO Auto-generated method stub
+
+	}
 }
