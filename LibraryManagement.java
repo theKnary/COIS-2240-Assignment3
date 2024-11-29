@@ -48,8 +48,14 @@ public class LibraryManagement {
 
 				scanner.nextLine();
 
-				Book newBook = new Book(id, title);
-				library.addBook(newBook);
+				Book newBook;
+				try {
+					newBook = new Book(id, title);
+					library.addBook(newBook);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 				System.out.println("Book added to library successfully.");
 				break;
 			case 3:
