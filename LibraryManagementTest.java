@@ -3,6 +3,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
@@ -124,6 +127,27 @@ class LibraryManagementTest {
 			boolean didReturnBook = transaction.returnBook(book, member);
 			assertFalse(didReturnBook);
 			assertTrue(book.isAvailable());
+		}
+	}
+
+	@Nested
+	static class SingletonTransactionTest {
+		@Test
+		void testSingletonTransaction() {
+			try {
+				Constructor<Transaction> constructor = Transaction.class.getDeclaredConstructor();
+				assertEquals(constructor.getModifiers(), Modifier.PRIVATE);
+			} catch (NoSuchMethodException | SecurityException e) {
+				assertNull(e);
+			}
+
+		}
+
+		@Test
+		void testSingletonTransactionGet() {
+			Transaction transaction = Transaction.getTransaction();
+			Transaction transaction2 = Transaction.getTransaction();
+			assertEquals(transaction, transaction2);
 		}
 	}
 
