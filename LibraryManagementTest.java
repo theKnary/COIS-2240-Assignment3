@@ -4,8 +4,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 class LibraryManagementTest {
 	@Nested
@@ -54,6 +57,7 @@ class LibraryManagementTest {
 	}
 
 	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	static class BorrowReturnTest {
 		static Book book;
 		static Member member;
@@ -79,16 +83,19 @@ class LibraryManagementTest {
 		}
 
 		@Test
+		@Order(1)
 		void testBookAvail() {
 			assertEquals(book.getTitle(), "book");
 		}
 
 		@Test
+		@Order(2)
 		void testMemberExists() {
 			assertEquals(member.getName(), "member");
 		}
 
 		@Test
+		@Order(3)
 		void testBorrow() {
 			boolean didBorrowBook = transaction.borrowBook(book, member);
 			assertTrue(didBorrowBook);
@@ -96,6 +103,7 @@ class LibraryManagementTest {
 		}
 
 		@Test
+		@Order(4)
 		void testBorrowFail() {
 			boolean didBorrowBook = transaction.borrowBook(book, member);
 			assertFalse(didBorrowBook);
@@ -103,6 +111,7 @@ class LibraryManagementTest {
 		}
 
 		@Test
+		@Order(5)
 		void testReturn() {
 			boolean didReturnbook = transaction.returnBook(book, member);
 			assertTrue(didReturnbook);
@@ -110,9 +119,10 @@ class LibraryManagementTest {
 		}
 
 		@Test
+		@Order(6)
 		void testReturnFail() {
-			boolean didBorrowBook = transaction.borrowBook(book, member);
-			assertFalse(didBorrowBook);
+			boolean didReturnBook = transaction.returnBook(book, member);
+			assertFalse(didReturnBook);
 			assertTrue(book.isAvailable());
 		}
 	}
