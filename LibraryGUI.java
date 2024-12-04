@@ -59,20 +59,56 @@ public class LibraryGUI extends Application {
 
 		// Borrow/Return Form
 		Label memberIDLabel = new Label("Member ID:");
+		memberIDLabel.setAlignment(Pos.CENTER_LEFT);
 		TextField memberIDField = new TextField();
 
 		Label bookIDLabel = new Label("Book ID:");
+		bookIDLabel.setAlignment(Pos.CENTER_LEFT);
 		TextField bookIDField = new TextField();
 
 		// Error message to be displayed if invalid id etc.
 		Text errorMessage = new Text("");
 		errorMessage.setFill(Color.RED);
+		errorMessage.setWrappingWidth(200);
+
+		EventHandler<ActionEvent> onBorrowReturnHandler = new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Member member = library.findMemberById(Integer.parseInt(memberIDField.getText()));
+				Book book = library.findBookById(Integer.parseInt(bookIDField.getText()));
+
+				if (member == null)
+					errorMessage.setText("Could not find member with that ID");
+				if (book == null)
+					errorMessage.setText(errorMessage.getText() + "  " + "Could not find book with that ID");
+				else {
+					if (!book.isAvailable()) {
+						boolean isReturn = false;
+						for (Book b : member.getBorrowedBooks()) {
+							if (b.getId() == book.getId()) {
+								isReturn = true;
+							}
+						}
+						if (!isReturn)
+							errorMessage.setText("Book is Unavailable");
+					} else {
+						Transaction.getTransaction().borrowBook(book, member);
+					}
+				}
+
+			}
+		};
+		bookIDField.setOnAction(onBorrowReturnHandler);
+
+		Button brBtn = new Button();
+		brBtn.setText("Add Member");
+		brBtn.setOnAction(onBorrowReturnHandler);
 
 		VBox mainBorrowReturnContainer = new VBox();
 		mainBorrowReturnContainer.setAlignment(Pos.TOP_CENTER);
 		mainBorrowReturnContainer.setPadding(new Insets(10, 10, 10, 10));
 		mainBorrowReturnContainer.getChildren().addAll(mainLabel, memberIDLabel, memberIDField, bookIDLabel,
-				bookIDField);
+				bookIDField, brBtn, errorMessage);
 
 		return mainBorrowReturnContainer;
 	}
@@ -87,6 +123,7 @@ public class LibraryGUI extends Application {
 
 		memberTable.getColumns().add(idCol);
 		memberTable.getColumns().add(nameCol);
+		memberTable.setMinHeight(700);
 
 		// Add Member Form
 		Label memberIDLabel = new Label("Member ID:");
@@ -149,6 +186,7 @@ public class LibraryGUI extends Application {
 		bookTable.getColumns().add(idCol);
 		bookTable.getColumns().add(titleCol);
 		bookTable.getColumns().add(statusCol);
+		bookTable.setMinHeight(700);
 
 		// Add book form
 		Label bookIDLabel = new Label("Book ID:");
