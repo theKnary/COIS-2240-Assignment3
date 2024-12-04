@@ -2,6 +2,8 @@ import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -51,6 +53,10 @@ public class LibraryGUI extends Application {
 	}
 
 	public VBox BorrowReturnPanel() {
+		// Borrow Return panel
+		Label mainLabel = new Label("Borrow/Return Book");
+		mainLabel.setPadding(new Insets(10, 10, 10, 10));
+
 		// Borrow/Return Form
 		Label memberIDLabel = new Label("Member ID:");
 		TextField memberIDField = new TextField();
@@ -63,7 +69,10 @@ public class LibraryGUI extends Application {
 		errorMessage.setFill(Color.RED);
 
 		VBox mainBorrowReturnContainer = new VBox();
-		mainBorrowReturnContainer.getChildren().addAll(memberIDLabel, memberIDField, bookIDLabel, bookIDField);
+		mainBorrowReturnContainer.setAlignment(Pos.TOP_CENTER);
+		mainBorrowReturnContainer.setPadding(new Insets(10, 10, 10, 10));
+		mainBorrowReturnContainer.getChildren().addAll(mainLabel, memberIDLabel, memberIDField, bookIDLabel,
+				bookIDField);
 
 		return mainBorrowReturnContainer;
 	}
@@ -176,6 +185,7 @@ public class LibraryGUI extends Application {
 		// Add book form container
 		HBox addBookContainer = new HBox();
 		addBookContainer.getChildren().addAll(bookIDLabel, bookIDField, bookTitleLabel, bookTitleField, abBtn);
+		addBookContainer.setAlignment(Pos.BOTTOM_CENTER);
 
 		// Main container
 		VBox mainBooksContainer = new VBox();
