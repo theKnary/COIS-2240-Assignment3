@@ -64,12 +64,20 @@ public class LibraryGUI extends Application {
 		Label memberNameLabel = new Label("Member Name:");
 		TextField memberNameField = new TextField();
 
+		// Error message to be displayed if invalid id etc.
+		Text errorMessage = new Text("");
+		errorMessage.setFill(Color.RED);
+
 		EventHandler<ActionEvent> onAddMemberHandler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Member newMember = new Member(Integer.parseInt(memberIDField.getText()), memberNameField.getText());
-				library.addMember(newMember);
-				memberTable.getItems().add(newMember);
+				boolean didAddMember = library.addMember(newMember);
+				if (didAddMember) {
+					memberTable.getItems().add(newMember);
+				} else {
+					errorMessage.setText("Member with that ID already exists");
+				}
 			}
 		};
 
@@ -88,6 +96,7 @@ public class LibraryGUI extends Application {
 		VBox mainMembersContainer = new VBox();
 		mainMembersContainer.getChildren().add(memberTable);
 		mainMembersContainer.getChildren().add(addMemberContainer);
+		mainMembersContainer.getChildren().add(errorMessage);
 
 		return mainMembersContainer;
 	}

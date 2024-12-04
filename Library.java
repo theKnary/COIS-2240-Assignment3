@@ -11,7 +11,6 @@ public class Library {
 			System.out.println("[Error] member with that ID already exists");
 			return false;
 		} else {
-
 			members.add(member);
 			return true;
 		}
