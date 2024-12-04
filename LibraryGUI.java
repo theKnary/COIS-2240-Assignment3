@@ -168,8 +168,13 @@ public class LibraryGUI extends Application {
 				Book newBook;
 				try {
 					newBook = new Book(Integer.parseInt(bookIDField.getText()), bookTitleField.getText());
-					library.addBook(newBook);
-					bookTable.getItems().add(newBook);
+					boolean didAddBook = library.addBook(newBook);
+					if (didAddBook) {
+						bookTable.getItems().add(newBook);
+					} else {
+
+						errorMessage.setText("Book with that ID already exists");
+					}
 				} catch (Exception e) {
 					errorMessage.setText(e.getMessage());
 				}
