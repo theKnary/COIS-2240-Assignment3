@@ -13,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class LibraryGUI extends Application {
@@ -29,7 +31,7 @@ public class LibraryGUI extends Application {
 		// Tabs
 		TabPane tabPane = new TabPane();
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-		Tab booksTab = new Tab("Books");
+		Tab booksTab = new Tab("Books", BooksView());
 		Tab membersTab = new Tab("Members", MembersView());
 		Tab transactionsTab = new Tab("Transactions");
 
@@ -78,7 +80,7 @@ public class LibraryGUI extends Application {
 		amBtn.setText("Add Member");
 		amBtn.setOnAction(onAddMemberHandler);
 
-		// Display form horizontally
+		// Add member container
 		HBox addMemberContainer = new HBox();
 		addMemberContainer.getChildren().addAll(memberIDLabel, memberIDField, memberNameLabel, memberNameField, amBtn);
 
@@ -88,6 +90,62 @@ public class LibraryGUI extends Application {
 		mainMembersContainer.getChildren().add(addMemberContainer);
 
 		return mainMembersContainer;
+	}
+
+	public VBox BooksView() {
+		// Books Table
+		TableView<Book> bookTable = new TableView<Book>();
+		TableColumn<Book, Integer> idCol = new TableColumn<Book, Integer>("ID");
+		idCol.setCellValueFactory(new PropertyValueFactory<Book, Integer>("id"));
+		TableColumn<Book, String> titleCol = new TableColumn<Book, String>("Title");
+		titleCol.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
+
+		bookTable.getColumns().add(idCol);
+		bookTable.getColumns().add(titleCol);
+
+		// Add book form
+		Label bookIDLabel = new Label("Book ID:");
+		TextField bookIDField = new TextField();
+
+		Label bookTitleLabel = new Label("Book Title:");
+		TextField bookTitleField = new TextField();
+
+		// Error message to be displayed if invalid id etc.
+		Text errorMessage = new Text("");
+		errorMessage.setFill(Color.RED);
+
+		// Add book handler
+		EventHandler<ActionEvent> onAddBookHandler = new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Book newBook;
+				try {
+					newBook = new Book(Integer.parseInt(bookIDField.getText()), bookTitleField.getText());
+					library.addBook(newBook);
+					bookTable.getItems().add(newBook);
+				} catch (Exception e) {
+					errorMessage.setText(e.getMessage());
+				}
+			}
+		};
+
+		bookTitleField.setOnAction(onAddBookHandler);
+
+		Button abBtn = new Button();
+		abBtn.setText("Add Book");
+		abBtn.setOnAction(onAddBookHandler);
+
+		// Add book form container
+		HBox addBookContainer = new HBox();
+		addBookContainer.getChildren().addAll(bookIDLabel, bookIDField, bookTitleLabel, bookTitleField, abBtn);
+
+		// Main container
+		VBox mainBooksContainer = new VBox();
+		mainBooksContainer.getChildren().add(bookTable);
+		mainBooksContainer.getChildren().add(addBookContainer);
+		mainBooksContainer.getChildren().add(errorMessage);
+
+		return mainBooksContainer;
 	}
 
 }
