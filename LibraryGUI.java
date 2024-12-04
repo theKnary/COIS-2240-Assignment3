@@ -101,7 +101,7 @@ public class LibraryGUI extends Application {
 		bookIDField.setOnAction(onBorrowReturnHandler);
 
 		Button brBtn = new Button();
-		brBtn.setText("Add Member");
+		brBtn.setText("Borrow/Return");
 		brBtn.setOnAction(onBorrowReturnHandler);
 
 		VBox mainBorrowReturnContainer = new VBox();
