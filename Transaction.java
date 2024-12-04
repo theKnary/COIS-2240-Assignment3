@@ -15,16 +15,16 @@ public class Transaction {
 	private static Transaction instance;
 	private static final Path transactionsFilePath = Paths.get("transactions.txt");
 
+	// Singleton constructor
+	private Transaction() {
+	}
+
 	// Singleton of transaction instance
-	public static Transaction getTransaction() {
+	public static synchronized Transaction getTransaction() {
 		if (instance == null)
 			instance = new Transaction();
 
 		return instance;
-	}
-
-	private Transaction() {
-
 	}
 
 	// Perform the borrowing of a book
