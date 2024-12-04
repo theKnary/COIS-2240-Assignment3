@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -109,8 +110,15 @@ public class LibraryGUI extends Application {
 		TableColumn<Book, String> titleCol = new TableColumn<Book, String>("Title");
 		titleCol.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
 
+		TableColumn<Book, String> statusCol = new TableColumn<Book, String>("Status");
+		statusCol.setCellValueFactory(cellData -> {
+			Book book = cellData.getValue();
+			return new ReadOnlyObjectWrapper<String>(book.isAvailable() ? "Available" : "Borrowed");
+		});
+
 		bookTable.getColumns().add(idCol);
 		bookTable.getColumns().add(titleCol);
+		bookTable.getColumns().add(statusCol);
 
 		// Add book form
 		Label bookIDLabel = new Label("Book ID:");
