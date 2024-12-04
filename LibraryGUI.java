@@ -40,11 +40,32 @@ public class LibraryGUI extends Application {
 		tabPane.getTabs().add(membersTab);
 		tabPane.getTabs().add(transactionsTab);
 
-		VBox mainPane = new VBox(tabPane);
+		HBox mainPane = new HBox();
+		mainPane.getChildren().add(BorrowReturnPanel());
+		mainPane.getChildren().add(tabPane);
+
 		Scene scene = new Scene(mainPane, 1000, 800);
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+
+	public VBox BorrowReturnPanel() {
+		// Borrow/Return Form
+		Label memberIDLabel = new Label("Member ID:");
+		TextField memberIDField = new TextField();
+
+		Label bookIDLabel = new Label("Book ID:");
+		TextField bookIDField = new TextField();
+
+		// Error message to be displayed if invalid id etc.
+		Text errorMessage = new Text("");
+		errorMessage.setFill(Color.RED);
+
+		VBox mainBorrowReturnContainer = new VBox();
+		mainBorrowReturnContainer.getChildren().addAll(memberIDLabel, memberIDField, bookIDLabel, bookIDField);
+
+		return mainBorrowReturnContainer;
 	}
 
 	public VBox MembersView() {
