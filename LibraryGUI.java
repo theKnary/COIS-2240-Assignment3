@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
@@ -36,7 +37,7 @@ public class LibraryGUI extends Application {
 		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 		Tab booksTab = new Tab("Books", BooksView());
 		Tab membersTab = new Tab("Members", MembersView());
-		Tab transactionsTab = new Tab("Transactions");
+		Tab transactionsTab = new Tab("Transactions", TransactionsView());
 
 		tabPane.getTabs().add(booksTab);
 		tabPane.getTabs().add(membersTab);
@@ -237,6 +238,18 @@ public class LibraryGUI extends Application {
 		mainBooksContainer.getChildren().add(errorMessage);
 
 		return mainBooksContainer;
+	}
+
+	public VBox TransactionsView() {
+		VBox mainTransactionsContainer = new VBox();
+
+		ListView<String> transactionsList = new ListView<String>();
+		transactionsList.setMinHeight(700);
+		transactionsList.getItems().addAll(Transaction.getTransaction().displayTransactionHistory());
+
+		mainTransactionsContainer.getChildren().add(transactionsList);
+
+		return mainTransactionsContainer;
 	}
 
 }

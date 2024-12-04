@@ -67,7 +67,7 @@ public class Transaction {
 	}
 
 	// Display transaction history by reading from file
-	public void displayTransactionHistory() {
+	public List<String> displayTransactionHistory() {
 		File f = new File(transactionsFilePath.toString());
 
 		System.out.println("----TRANSACTION HISTORY----");
@@ -81,9 +81,11 @@ public class Transaction {
 				System.out.println(t.toString());
 			}
 
+			return transactionHistory;
 		} catch (IOException e) {
 			System.out.println("Error reading transaction file");
 			e.printStackTrace();
+			return null;
 		}
 
 	}
