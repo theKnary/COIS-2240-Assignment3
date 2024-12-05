@@ -88,30 +88,37 @@ public class LibraryGUI extends Application {
 		EventHandler<ActionEvent> onBorrowReturnHandler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Member member = library.findMemberById(Integer.parseInt(memberIDField.getText()));
-				Book book = library.findBookById(Integer.parseInt(bookIDField.getText()));
-
-				if (member == null)
-					errorMessage.setText("Could not find member with that ID");
-				if (book == null)
-					errorMessage.setText(errorMessage.getText() + "  " + "Could not find book with that ID");
+				if (memberIDField.getText().isEmpty() || bookIDField.getText().isEmpty())
+					return;
 				else {
-					if (!book.isAvailable()) {
-						boolean isReturn = false;
-						for (Book b : member.getBorrowedBooks()) {
-							if (b.getId() == book.getId()) {
-								isReturn = true;
+					Member member = library.findMemberById(Integer.parseInt(memberIDField.getText()));
+					Book book = library.findBookById(Integer.parseInt(bookIDField.getText()));
+
+					if (member == null)
+						errorMessage.setText("Could not find member with that ID");
+					if (book == null)
+						errorMessage.setText(errorMessage.getText() + "  " + "Could not find book with that ID");
+					else {
+						if (!book.isAvailable()) {
+							boolean isReturn = false;
+							for (Book b : member.getBorrowedBooks()) {
+								if (b.getId() == book.getId()) {
+									isReturn = true;
+								}
 							}
+							if (!isReturn)
+								errorMessage.setText("Book is Unavailable");
+							else
+								Transaction.getTransaction().returnBook(book, member);
+						} else {
+							Transaction.getTransaction().borrowBook(book, member);
 						}
-						if (!isReturn)
-							errorMessage.setText("Book is Unavailable");
-						else
-							Transaction.getTransaction().returnBook(book, member);
-					} else {
-						Transaction.getTransaction().borrowBook(book, member);
 					}
+					updateTables();
+					bookIDField.clear();
+					memberIDField.clear();
 				}
-				updateTables();
+
 			}
 		};
 		bookIDField.setOnAction(onBorrowReturnHandler);
@@ -176,6 +183,8 @@ public class LibraryGUI extends Application {
 						errorMessage.setText("Member with that ID already exists");
 					}
 					updateTables();
+					memberNameField.clear();
+					memberIDField.clear();
 				}
 			}
 		};
@@ -250,6 +259,8 @@ public class LibraryGUI extends Application {
 						errorMessage.setText(e.getMessage());
 					}
 					updateTables();
+					bookIDField.clear();
+					bookTitleField.clear();
 				}
 
 			}
