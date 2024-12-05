@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.event.ActionEvent;
@@ -23,6 +26,9 @@ import javafx.stage.Stage;
 
 public class LibraryGUI extends Application {
 	private Library library = new Library();
+	TableView<Member> memberTable = new TableView<Member>();
+	TableView<Book> bookTable = new TableView<Book>();
+	ListView<String> transactionsList = new ListView<String>();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -53,9 +59,16 @@ public class LibraryGUI extends Application {
 		primaryStage.show();
 	}
 
+	public void updateTables() {
+		memberTable.refresh();
+		bookTable.refresh();
+		transactionsList.refresh();
+	}
+
 	public VBox BorrowReturnPanel() {
 		// Borrow Return panel
 		Label mainLabel = new Label("Borrow/Return Book");
+		mainLabel.setStyle("-fx-font-weight: bold");
 		mainLabel.setPadding(new Insets(10, 10, 10, 10));
 
 		// Borrow/Return Form
@@ -92,11 +105,13 @@ public class LibraryGUI extends Application {
 						}
 						if (!isReturn)
 							errorMessage.setText("Book is Unavailable");
+						else
+							Transaction.getTransaction().returnBook(book, member);
 					} else {
 						Transaction.getTransaction().borrowBook(book, member);
 					}
 				}
-
+				updateTables();
 			}
 		};
 		bookIDField.setOnAction(onBorrowReturnHandler);
@@ -116,14 +131,24 @@ public class LibraryGUI extends Application {
 
 	public VBox MembersView() {
 		// Members Table
-		TableView<Member> memberTable = new TableView<Member>();
 		TableColumn<Member, Integer> idCol = new TableColumn<Member, Integer>("ID");
 		idCol.setCellValueFactory(new PropertyValueFactory<Member, Integer>("id"));
 		TableColumn<Member, String> nameCol = new TableColumn<Member, String>("Name");
 		nameCol.setCellValueFactory(new PropertyValueFactory<Member, String>("name"));
+		TableColumn<Member, String> borBooksCol = new TableColumn<Member, String>("Borrowed Books");
+		borBooksCol.setCellValueFactory(cellData -> {
+			Member member = cellData.getValue();
+			List<String> books = new ArrayList<String>();
+			for (Book book : member.getBorrowedBooks()) {
+				books.add(book.getTitle() + " (" + book.getId() + ")");
+			}
+			return new ReadOnlyObjectWrapper<String>(books.toString());
+		});
+		borBooksCol.setMinWidth(300);
 
 		memberTable.getColumns().add(idCol);
 		memberTable.getColumns().add(nameCol);
+		memberTable.getColumns().add(borBooksCol);
 		memberTable.setMinHeight(700);
 
 		// Add Member Form
@@ -140,12 +165,17 @@ public class LibraryGUI extends Application {
 		EventHandler<ActionEvent> onAddMemberHandler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Member newMember = new Member(Integer.parseInt(memberIDField.getText()), memberNameField.getText());
-				boolean didAddMember = library.addMember(newMember);
-				if (didAddMember) {
-					memberTable.getItems().add(newMember);
-				} else {
-					errorMessage.setText("Member with that ID already exists");
+				if (memberIDField.getText().isEmpty() || memberNameField.getText().isEmpty())
+					return;
+				else {
+					Member newMember = new Member(Integer.parseInt(memberIDField.getText()), memberNameField.getText());
+					boolean didAddMember = library.addMember(newMember);
+					if (didAddMember) {
+						memberTable.getItems().add(newMember);
+					} else {
+						errorMessage.setText("Member with that ID already exists");
+					}
+					updateTables();
 				}
 			}
 		};
@@ -159,6 +189,7 @@ public class LibraryGUI extends Application {
 
 		// Add member container
 		HBox addMemberContainer = new HBox();
+		addMemberContainer.setAlignment(Pos.BOTTOM_CENTER);
 		addMemberContainer.getChildren().addAll(memberIDLabel, memberIDField, memberNameLabel, memberNameField, amBtn);
 
 		// Main container
@@ -172,7 +203,6 @@ public class LibraryGUI extends Application {
 
 	public VBox BooksView() {
 		// Books Table
-		TableView<Book> bookTable = new TableView<Book>();
 		TableColumn<Book, Integer> idCol = new TableColumn<Book, Integer>("ID");
 		idCol.setCellValueFactory(new PropertyValueFactory<Book, Integer>("id"));
 		TableColumn<Book, String> titleCol = new TableColumn<Book, String>("Title");
@@ -204,19 +234,24 @@ public class LibraryGUI extends Application {
 		EventHandler<ActionEvent> onAddBookHandler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Book newBook;
-				try {
-					newBook = new Book(Integer.parseInt(bookIDField.getText()), bookTitleField.getText());
-					boolean didAddBook = library.addBook(newBook);
-					if (didAddBook) {
-						bookTable.getItems().add(newBook);
-					} else {
-
-						errorMessage.setText("Book with that ID already exists");
+				if (bookIDField.getText().isEmpty() || bookTitleField.getText().isEmpty())
+					return;
+				else {
+					Book newBook;
+					try {
+						newBook = new Book(Integer.parseInt(bookIDField.getText()), bookTitleField.getText());
+						boolean didAddBook = library.addBook(newBook);
+						if (didAddBook) {
+							bookTable.getItems().add(newBook);
+						} else {
+							errorMessage.setText("Book with that ID already exists");
+						}
+					} catch (Exception e) {
+						errorMessage.setText(e.getMessage());
 					}
-				} catch (Exception e) {
-					errorMessage.setText(e.getMessage());
+					updateTables();
 				}
+
 			}
 		};
 
@@ -243,7 +278,6 @@ public class LibraryGUI extends Application {
 	public VBox TransactionsView() {
 		VBox mainTransactionsContainer = new VBox();
 
-		ListView<String> transactionsList = new ListView<String>();
 		transactionsList.setMinHeight(700);
 		transactionsList.getItems().addAll(Transaction.getTransaction().displayTransactionHistory());
 
